@@ -1,30 +1,11 @@
 #!/bin/bash
 
-if [[ "$EUID" -ne 0 ]]; then 
-    echo "Please run the script with root privileges (e.g. sudo ./install.sh)"
-    exit
-fi
+user=$(whoami)
 
-default_user="$SUDO_USER"
 clear
-
-if [[ -z $default_user ]]; then
-    read -rp "Please provide your username: " user
-else
-    read -rp "Please provide your username (default detected: $default_user): " user
-fi
-
-if [[ -z $default_user && $user == "" ]]; then
-    echo "Error: no username provided."
-    exit
-fi
 
 read -rp "Please provide password for xdrd (default: password): " xdrd_password
 read -rp "Please provide the used serial port path (default: /dev/ttyUSB0): " xdrd_serial_port
-
-if [[ $user == "" ]]; then
-    user="$default_user"
-fi
 
 if [[ $xdrd_password == "" ]]; then
     xdrd_password="password"
@@ -39,20 +20,17 @@ cd build
 
 build_dir=$(pwd)
 
-apt update
-apt install git make gcc -y
+sudo apt update
+sudo apt install git make gcc -y
 git clone https://github.com/kkonradpl/xdrd.git
-apt install libssl-dev pkgconf -y
+sudo apt install libssl-dev pkgconf -y
 cd xdrd/
 make
-make install
-usermod -aG dialout $user
+sudo make install
+sudo usermod -aG dialout $user
 
-cd $build_dir
-cd ..
-chown -R $user:$user build/
-
-echo "[Unit]
+cat <<EOF | sudo tee /etc/systemd/system/xdrd.service
+[Unit]
 Description=xdrd
 After=network-online.target
 Wants=network-online.target
@@ -66,7 +44,8 @@ StandardError=syslog
 SyslogIdentifier=xdrd
 
 [Install]
-WantedBy=multi-user.target" > /etc/systemd/system/xdrd.service
+WantedBy=multi-user.target
+EOF
 
 chmod 644 /etc/systemd/system/xdrd.service
 systemctl daemon-reload
@@ -75,12 +54,14 @@ systemctl enable xdrd
 
 cd $build_dir
 git clone https://github.com/NoobishSVK/fm-dx-webserver.git
-apt install ffmpeg nodejs npm -y
+sudo apt install ffmpeg nodejs npm -y
+cd fm-dx-webserver/
 npm install
 
 usermod -aG audio $user
 
-echo "[Unit]
+cat <<EOF | sudo tee /etc/systemd/system/fm-dx-webserver.service
+[Unit]
 Description=FM-DX Webserver
 After=network-online.target xdrd.service
 Requires=xdrd.service
@@ -95,7 +76,8 @@ StandardError=syslog
 SyslogIdentifier=fm-dx-webserver
 
 [Install]
-WantedBy=multi-user.target" > /etc/systemd/system/fm-dx-webserver.service
+WantedBy=multi-user.target
+EOF
 
 chmod 644 /etc/systemd/system/fm-dx-webserver.service
 systemctl daemon-reload
