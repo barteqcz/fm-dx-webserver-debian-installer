@@ -23,7 +23,7 @@ read -rp "Please provide password for xdrd (default: password): " xdrd_password
 read -rp "Please provide the used serial port path (default: /dev/ttyUSB0): " xdrd_serial_port
 
 if [[ $user == "" ]]; then
-    user="$dfeault_user"
+    user="$default_user"
 fi
 
 if [[ $xdrd_password == "" ]]; then
