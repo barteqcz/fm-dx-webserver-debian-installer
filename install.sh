@@ -1,13 +1,22 @@
 #/bin/bash
 
 if [ "$EUID" -ne 0 ]; then 
-    echo "Please run the script with root privileges."
+    echo "Please run the script with root privileges (e.g. sudo ./install.sh)"
     exit
 fi
 
+user="$SUDO_USER"
+
 clear
-read -rp "Please provide password for xdrd (default: password): " $xdrd_password
-read -rp "Please provide the used serial port path (default: /dev/ttyUSB0): " $xdrd_serial_port
+
+if [[ -z $user ]]; then
+    read -rp "Please provide your username: " user
+else
+    read -rp "Please provide your username (default detected: $user): " user
+fi
+
+read -rp "Please provide password for xdrd (default: password): " xdrd_password
+read -rp "Please provide the used serial port path (default: /dev/ttyUSB0): " xdrd_serial_port
 
 if [[ $xdrd_password == "" ]]; then
     xdrd_password="password"
@@ -16,8 +25,6 @@ fi
 if [[ $xdrd_serial_port == "" ]]; then
     xdrd_serial_port="/dev/ttyUSB0"
 fi
-
-user=$USER
 
 mkdir build
 cd build
