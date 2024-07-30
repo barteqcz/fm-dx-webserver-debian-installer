@@ -1,6 +1,6 @@
 #/bin/bash
 
-if [ "$EUID" -ne 0 ]; then 
+if [[ "$EUID" -ne 0 ]]; then 
     echo "Please run the script with root privileges (e.g. sudo ./install.sh)"
     exit
 fi
