@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 if [[ "$EUID" -ne 0 ]]; then 
     echo "Please run the script with root privileges (e.g. sudo ./install.sh)"
@@ -6,7 +6,6 @@ if [[ "$EUID" -ne 0 ]]; then
 fi
 
 user="$SUDO_USER"
-
 clear
 
 if [[ -z $user ]]; then
