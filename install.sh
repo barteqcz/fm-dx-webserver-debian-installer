@@ -21,13 +21,13 @@ cd build
 
 build_dir=$(pwd)
 
-apt install git -y
+sudo apt install git -y
 git clone https://github.com/kkonradpl/xdrd.git
-apt install libssl-dev pkgconf -y
+sudo apt install libssl-dev pkgconf -y
 cd xdrd/
 make
-make install
-usermod -aG dialout $user
+sudo make install
+sudo usermod -aG dialout $user
 
 echo "[Unit] \
 Description=xdrd \
@@ -43,20 +43,19 @@ StandardError=syslog \
 SyslogIdentifier=xdrd \
 \
 [Install] \
-WantedBy=multi-user.target" > /etc/systemd/system/xdrd.service
+WantedBy=multi-user.target" | sudo tee /etc/systemd/system/xdrd.service
 
-chmod 644 /etc/systemd/system/xdrd.service
-systemctl daemon-reload
-systemctl start xdrd
-systemctl enable xdrd
+sudo chmod 644 /etc/systemd/system/xdrd.service
+sudo systemctl daemon-reload
+sudo systemctl start xdrd
+sudo systemctl enable xdrd
 
 cd $build_dir
 git clone https://github.com/NoobishSVK/fm-dx-webserver.git
-apt install ffmpeg nodejs npm -y
+sudo apt install ffmpeg nodejs npm -y
 npm install
 
-addgroup $user audio
-newgrp audio
+sudo usermod -aG audio $user
 
 echo "[Unit] \
 Description=FM-DX Webserver \
@@ -73,13 +72,12 @@ StandardError=syslog \
 SyslogIdentifier=fm-dx-webserver \
 \
 [Install] \
-WantedBy=multi-user.target" > /etc/systemd/system/fm-dx-webserver.service
+WantedBy=multi-user.target" | sudo tee /etc/systemd/system/fm-dx-webserver.service
 
-chmod 644 /etc/systemd/system/fm-dx-webserver.service
-systemctl daemon-reload
-systemctl start fm-dx-webserver
-systemctl enable fm-dx-webserver
+sudo chmod 644 /etc/systemd/system/fm-dx-webserver.service
+sudo systemctl daemon-reload
+sudo systemctl start fm-dx-webserver
+sudo systemctl enable fm-dx-webserver
 
 clear
 echo "Installation process finished. Check http://localhost:8080 in your browser."
-exit
