@@ -1,8 +1,8 @@
 #/bin/bash
 
 clear
-read -rp "Please provide password for xdrd (default: password): " xdrd_password
-read -rp "Please provide the used serial port path (default: /dev/ttyUSB0): " xdrd_serial_port
+read -rp "Please provide password for xdrd (default: password): " $xdrd_password
+read -rp "Please provide the used serial port path (default: /dev/ttyUSB0): " $xdrd_serial_port
 
 if [[ $xdrd_password == "" ]]; then
     xdrd_password="password"
@@ -14,13 +14,12 @@ fi
 
 user=$(whoami)
 
-sudo -i
-
 mkdir build
 cd build
 
 build_dir=$(pwd)
 
+sudo apt update
 sudo apt install git -y
 git clone https://github.com/kkonradpl/xdrd.git
 sudo apt install libssl-dev pkgconf -y
