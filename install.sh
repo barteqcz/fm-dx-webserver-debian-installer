@@ -48,6 +48,10 @@ make
 make install
 usermod -aG dialout $user
 
+cd $build_dir
+cd ..
+chown -R build $user
+
 echo "[Unit]
 Description=xdrd
 After=network-online.target
