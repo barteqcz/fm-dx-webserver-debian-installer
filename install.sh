@@ -40,7 +40,7 @@ cd build
 build_dir=$(pwd)
 
 apt update
-apt install git make -y
+apt install git make gcc -y
 git clone https://github.com/kkonradpl/xdrd.git
 apt install libssl-dev pkgconf -y
 cd xdrd/
