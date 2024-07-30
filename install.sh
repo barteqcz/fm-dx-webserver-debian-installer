@@ -20,9 +20,8 @@ cd build
 build_dir=$(pwd)
 
 sudo apt update
-sudo apt install git make gcc -y
+sudo apt install git make gcc libssl-dev pkgconf -y
 git clone https://github.com/kkonradpl/xdrd.git
-sudo apt install libssl-dev pkgconf -y
 cd xdrd/
 make
 sudo make install
@@ -48,8 +47,7 @@ EOF
 
 sudo chmod 644 /etc/systemd/system/xdrd.service
 sudo systemctl daemon-reload
-sudo systemctl start xdrd
-sudo systemctl enable xdrd
+sudo systemctl enable --now xdrd
 
 cd $build_dir
 git clone https://github.com/NoobishSVK/fm-dx-webserver.git
@@ -80,8 +78,7 @@ EOF
 
 sudo chmod 644 /etc/systemd/system/fm-dx-webserver.service
 sudo systemctl daemon-reload
-sudo systemctl start fm-dx-webserver
-sudo systemctl enable fm-dx-webserver
+sudo systemctl enable --now fm-dx-webserver
 
 clear
 echo "Installation process finished. Check http://localhost:8080 in your browser."
