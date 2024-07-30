@@ -3,15 +3,31 @@
 user=$(whoami)
 
 clear
-read -rp "Please provide password for xdrd (or leave empty for the default: password): " xdrd_password
-read -rp "Please provide the used serial port path (or leave empty for the default: /dev/ttyUSB0): " xdrd_serial_port
+compatible_devices=$(ls /dev/serial/by-id | grep "FMDX.org")
 
-if [[ $xdrd_password == "" ]]; then
-    xdrd_password="password"
+if [ -z "$compatible_devices" ]; then
+    read -rp "Please provide the used serial port path (or leave empty for the default: /dev/ttyUSB0): " xdrd_serial_port
+else
+    echo "Available devices (enter the corresponding number to pick one):"
+    select device_id in $compatible_devices; do
+        if [ -n "$device_id" ]; then
+            device_path="/dev/serial/by-id/$device_id"
+            xdrd_serial_port=$(readlink -f "$device_path")
+            break
+        else
+            echo "Invalid selection. Please try again."
+        fi
+    done
 fi
+
+read -rp "Please provide password for xdrd (or leave empty for the default: password): " xdrd_password
 
 if [[ $xdrd_serial_port == "" ]]; then
     xdrd_serial_port="/dev/ttyUSB0"
+fi
+
+if [[ $xdrd_password == "" ]]; then
+    xdrd_password="password"
 fi
 
 mkdir build
