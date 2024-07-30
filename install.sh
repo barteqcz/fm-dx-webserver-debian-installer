@@ -50,7 +50,7 @@ usermod -aG dialout $user
 
 cd $build_dir
 cd ..
-chown -R build $user
+chown -R $user build
 
 echo "[Unit]
 Description=xdrd
