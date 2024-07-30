@@ -3,9 +3,8 @@
 user=$(whoami)
 
 clear
-
-read -rp "Please provide password for xdrd (default: password): " xdrd_password
-read -rp "Please provide the used serial port path (default: /dev/ttyUSB0): " xdrd_serial_port
+read -rp "Please provide password for xdrd (or leave empty for the default: password): " xdrd_password
+read -rp "Please provide the used serial port path (or leave empty for the default: /dev/ttyUSB0): " xdrd_serial_port
 
 if [[ $xdrd_password == "" ]]; then
     xdrd_password="password"
@@ -47,10 +46,10 @@ SyslogIdentifier=xdrd
 WantedBy=multi-user.target
 EOF
 
-chmod 644 /etc/systemd/system/xdrd.service
-systemctl daemon-reload
-systemctl start xdrd
-systemctl enable xdrd
+sudo chmod 644 /etc/systemd/system/xdrd.service
+sudo systemctl daemon-reload
+sudo systemctl start xdrd
+sudo systemctl enable xdrd
 
 cd $build_dir
 git clone https://github.com/NoobishSVK/fm-dx-webserver.git
@@ -58,7 +57,7 @@ sudo apt install ffmpeg nodejs npm -y
 cd fm-dx-webserver/
 npm install
 
-usermod -aG audio $user
+sudo usermod -aG audio $user
 
 cat <<EOF | sudo tee /etc/systemd/system/fm-dx-webserver.service
 [Unit]
@@ -79,10 +78,10 @@ SyslogIdentifier=fm-dx-webserver
 WantedBy=multi-user.target
 EOF
 
-chmod 644 /etc/systemd/system/fm-dx-webserver.service
-systemctl daemon-reload
-systemctl start fm-dx-webserver
-systemctl enable fm-dx-webserver
+sudo chmod 644 /etc/systemd/system/fm-dx-webserver.service
+sudo systemctl daemon-reload
+sudo systemctl start fm-dx-webserver
+sudo systemctl enable fm-dx-webserver
 
 clear
 echo "Installation process finished. Check http://localhost:8080 in your browser."
