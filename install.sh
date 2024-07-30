@@ -34,7 +34,7 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-ExecStart=/usr/bin/xdrd -s $xdrd_serial_port -p $xdrd_password
+ExecStart=/usr/bin/xdrd -b -s $xdrd_serial_port -p $xdrd_password
 User=$user
 Restart=always
 StandardOutput=syslog
