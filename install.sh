@@ -5,17 +5,26 @@ if [[ "$EUID" -ne 0 ]]; then
     exit
 fi
 
-user="$SUDO_USER"
+default_user="$SUDO_USER"
 clear
 
-if [[ -z $user ]]; then
+if [[ -z $default_user ]]; then
     read -rp "Please provide your username: " user
 else
-    read -rp "Please provide your username (default detected: $user): " user
+    read -rp "Please provide your username (default detected: $default_user): " user
+fi
+
+if [[ -z $default_user && $user == "" ]]; then
+    echo "Error: no username provided."
+    exit
 fi
 
 read -rp "Please provide password for xdrd (default: password): " xdrd_password
 read -rp "Please provide the used serial port path (default: /dev/ttyUSB0): " xdrd_serial_port
+
+if [[ $user == "" ]]; then
+    user="$dfeault_user"
+fi
 
 if [[ $xdrd_password == "" ]]; then
     xdrd_password="password"
