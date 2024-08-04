@@ -4,20 +4,27 @@ user=$(whoami)
 
 clear
 compatible_devices=$(ls /dev/serial/by-id | grep "FMDX.org")
+compatible_device_count=$(echo "$compatible_devices" | wc -l)
 
-if [ -z "$compatible_devices" ]; then
+if [[ -z "$compatible_devices" ]]; then
     read -rp "Please provide the used serial port path (or leave empty for the default: /dev/ttyUSB0): " xdrd_serial_port
 else
-    echo "Available devices (enter the corresponding number to pick one):"
-    select device_id in $compatible_devices; do
-        if [ -n "$device_id" ]; then
-            device_path="/dev/serial/by-id/$device_id"
-            xdrd_serial_port=$(readlink -f "$device_path")
-            break
-        else
-            echo "Invalid selection. Please try again."
-        fi
-    done
+    if [[ "$compatible_device_count" -eq 1 ]]; then
+        device_id=$(echo "$compatible_devices")
+        device_path="/dev/serial/by-id/$device_id"
+        xdrd_serial_port=$(readlink -f "$device_path")
+    else
+        echo "Available devices (enter the corresponding number to pick one):"
+        select device_id in $compatible_devices; do
+            if [[ -n "$device_id" ]]; then
+                device_path="/dev/serial/by-id/$device_id"
+                xdrd_serial_port=$(readlink -f "$device_path")
+                break
+            else
+                echo "Invalid selection. Please try again."
+            fi
+        done
+    fi
 fi
 
 read -rp "Please provide password for xdrd (or leave empty for the default: password): " xdrd_password
