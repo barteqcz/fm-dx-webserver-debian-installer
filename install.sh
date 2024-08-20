@@ -102,7 +102,13 @@ sudo systemctl enable --now xdrd
 
 cd $build_dir
 git clone https://github.com/NoobishSVK/fm-dx-webserver.git
-sudo apt install ffmpeg nodejs npm -y
+if [[ "$distro" == "arch" ]]; then
+    sudo pacman -S ffpmeg nodejs npm --noconfirm
+elif [[ "$distro" == "debian" ]]; then
+    sudo apt install ffmpeg nodejs npm -y
+elif [[ "$distro" == "fedora" ]]; then
+    sudo dnf install ffmpeg-free nodejs npm -y
+fi
 cd fm-dx-webserver/
 npm install
 
