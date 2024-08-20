@@ -37,13 +37,41 @@ if [[ $xdrd_password == "" ]]; then
     xdrd_password="password"
 fi
 
+PS3='Please select your distribution base: '
+options=("Arch" "Debian" "Fedora")
+select opt in "${options[@]}"
+do
+    case $opt in
+        "Arch")
+            distro="arch"
+            break
+            ;;
+        "Debian")
+            distro="debian"
+            break
+            ;;
+        "Fedora")
+            distro="fedora"
+            break
+            ;;
+        *) echo "Invalid option. Please try again.";;
+    esac
+done
+
 mkdir build
 cd build
 
 build_dir=$(pwd)
 
-sudo apt update
-sudo apt install git make gcc libssl-dev pkgconf alsa-utils -y
+if [[ "$distro" == "arch" ]]; then
+    sudo pacman -Sy git make gcc openssl pkgconf alsa-utils --noconfirm
+elif [[ "$distro" == "debian" ]]; then
+    sudo apt update
+    sudo apt install git make gcc libssl-dev pkgconf alsa-utils -y
+elif [[ "$distro" == "fedora" ]]; then
+    sudo dnf install git make gcc openssl pkgconf alsa-utils --refresh -y
+fi
+
 git clone https://github.com/kkonradpl/xdrd.git
 cd xdrd/
 make
